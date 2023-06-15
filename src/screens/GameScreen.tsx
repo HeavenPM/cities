@@ -42,14 +42,15 @@ const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
     const handleButtonPress = () => {
         if (inputText.trim() === '') {
           handleOpenModal('Input error', 'The text field must not be empty!');
+        } else if (usedCities.find(item => item.city === inputText.toUpperCase())) {
+          handleOpenModal('The city was already', 'There is such a city, but it has already been told. Try again!');
         } else if (allCities.includes(inputText.toLocaleUpperCase())) {
           if (currentCity.charAt(currentCity.length - 1).toUpperCase() === inputText.charAt(0).toUpperCase()) {
             setScore(prev => prev + 5);
             setUsedCities(prevUsedCities => [...prevUsedCities, { city: inputText.toLocaleUpperCase(), isUserCity: true }]);
             setAllCities(prevAllCities => prevAllCities.filter(item => item !== inputText));
-      
             const letter = inputText.charAt(inputText.length - 1).toUpperCase();
-            const foundCity = allCities.find(city => city.startsWith(letter) && city !== inputText);
+            const foundCity = allCities.find(city => city.startsWith(letter) && city !== inputText.toUpperCase());
       
             if (foundCity) {
               setCurrentCity(foundCity);
@@ -60,14 +61,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
               setIsWinner(true);
               handleOpenModal('You win!', `Wow! You got me stumped. I don't know any more cities on the ${inputText.charAt(inputText.length - 1).toUpperCase()}`);
             }
-      
           } else {
             handleOpenModal('Wrong city', `You need to specify a city that begins with ${currentCity.charAt(currentCity.length - 1).toUpperCase()}`);
           }
       
-        } else if (usedCities.some(item => item.city === inputText)) {
-          handleOpenModal('The city was already', 'There is such a city, but it has already been told. Try again!');
-        } else {
+        }  else {
           handleOpenModal('There is no such city', "I don't know such a city. Are you sure you spelled it right?");
         }
         setInputText('');
